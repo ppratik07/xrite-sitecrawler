@@ -1,0 +1,1 @@
+{"root":["./src/config.ts","./src/content-extractor.ts","./src/http-client.ts","./src/index.ts","./src/language-detector.ts","./src/page-analyzer.ts","./src/report-generator.ts","./src/types.ts","./src/url-discovery.ts"],"version":"5.9.2"}
