@@ -1,3 +1,5 @@
+// /Discovers URLs to analyze by crawling the website starting from startUrl.
+
 import * as cheerio from 'cheerio';
 import { HttpClient } from './http-client';
 import { config } from './config';
@@ -10,6 +12,11 @@ export class UrlDiscovery {
   constructor() {
     this.httpClient = new HttpClient();
   }
+//   For each page, it:
+// Fetches the HTML using HttpClient.
+// Extracts all <a href> links.
+// Filters valid URLs using isValidUrl.
+// Adds valid URLs to discoveredUrls if they haven’t been visited and the maxUrls limit isn’t reached.
 
   async discoverUrls(): Promise<string[]> {
     console.log(`🚀 Starting URL discovery from: ${config.startUrl}`);
@@ -23,6 +30,7 @@ export class UrlDiscovery {
     return urls;
   }
 
+  //Starts with startUrl and recursively crawls links found on each page (breadth-first approach).
   private async crawlForUrls(url: string): Promise<void> {
     if (this.visitedUrls.has(url) || this.discoveredUrls.size >= config.maxUrls) {
       return;

@@ -13,7 +13,24 @@ export class PageAnalyzer {
     this.contentExtractor = new ContentExtractor();
     this.languageDetector = new LanguageDetector();
   }
+// The analyzePage method:
 
+// Fetches the page’s HTML.
+// Extracts visible text.
+// If text is too short, logs a warning and returns null.
+// Detects language stats and calculates percentages.
+// Determines the dominant language.
+// Compiles a PageAnalysis object with:
+
+// URL.
+// Dominant language (pl, en, or mixed).
+// Language percentages (Polish, English, others).
+// Total word count.
+// English content details (if any English words are detected).
+
+
+// Logs the analysis results (dominant language, percentages, total words).
+// Returns the PageAnalysis object or null on error.
   async analyzePage(url: string): Promise<PageAnalysis | null> {
     try {
       console.log(`🔍 Analyzing: ${url}`);

@@ -5,6 +5,7 @@ export class HttpClient {
   private client: AxiosInstance;
   private lastRequestTime: number = 0;
 
+  //create an HTTP client with predefined headers (e.g., User-Agent, Accept-Language) to mimic a browser.
   constructor() {
     this.client = axios.create({
       timeout: 30000,
@@ -18,7 +19,8 @@ export class HttpClient {
       }
     });
   }
-
+//The get method sends an HTTP GET request to the provided URL and returns the response.
+//If a request fails, it logs the error and rethrows it for upstream handling.
   async get(url: string): Promise<AxiosResponse<string>> {
     await this.respectRateLimit();
     
@@ -33,6 +35,7 @@ export class HttpClient {
     }
   }
 
+  //Implements rate-limiting via respectRateLimit, ensuring a delay (configured as 1 second) between requests to avoid overwhelming the server.
   private async respectRateLimit(): Promise<void> {
     const now = Date.now();
     const timeSinceLastRequest = now - this.lastRequestTime;

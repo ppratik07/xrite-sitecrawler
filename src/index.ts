@@ -3,7 +3,28 @@ import { PageAnalyzer } from './page-analyzer';
 import { ReportGenerator } from './report-generator';
 import { PageAnalysis } from './types';
 import { config } from './config'
+// Purpose: Orchestrates the entire crawling process.
+// Key Features:
 
+// Initializes UrlDiscovery, PageAnalyzer, and ReportGenerator.
+// Executes the three phases: URL discovery, page analysis, and report generation.
+// Tracks progress and logs timing information.
+
+
+// How It Works:
+
+// The run method:
+
+// Logs configuration details (start URL, max URLs, output file).
+// Phase 1: Calls UrlDiscovery.discoverUrls to get a list of URLs.
+// Phase 2: Iterates over URLs, calling PageAnalyzer.analyzePage for each, and collects results.
+// Logs progress every 10 pages.
+// Phase 3: Calls ReportGenerator.saveResults to save results and logSummary to print the summary.
+// Tracks and logs the total duration of the crawl.
+
+
+// Handles errors by logging them and exiting with a failure code.
+// Creates a WebsiteLanguageCrawler instance and runs it.
 class WebsiteLanguageCrawler {
   private urlDiscovery: UrlDiscovery;
   private pageAnalyzer: PageAnalyzer;

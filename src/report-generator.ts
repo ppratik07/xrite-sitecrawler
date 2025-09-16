@@ -1,7 +1,38 @@
 import * as fs from 'fs/promises';
 import { PageAnalysis, CrawlSummary, EnglishContentReport } from './types';
 import { config } from './config';
+// How It Works:
 
+// saveResults:
+
+// Writes all PageAnalysis objects to outputFile as JSON.
+// Calls saveEnglishContentReport to generate the English content report.
+
+
+// saveEnglishContentReport:
+
+// Filters pages with English content.
+// Creates an EnglishContentReport for each, including:
+
+// URL.
+// English percentage.
+// English sentences and words.
+// Total English word count.
+// Sample sentences (first 5).
+
+
+// Sorts by English percentage and saves to englishContentFile.
+
+
+// generateSummary:
+
+// Calculates average Polish and English percentages.
+// Identifies pages with >30% English content and no Polish content.
+
+
+// logSummary:
+
+// Prints a detailed summary, including total pages, average percentages, and lists of notable pages.
 export class ReportGenerator {
   async saveResults(results: PageAnalysis[]): Promise<void> {
     try {

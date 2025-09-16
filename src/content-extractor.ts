@@ -35,3 +35,8 @@ export class ContentExtractor {
       .filter(sentence => sentence.length > 10); // Filter out very short fragments
   }
 }
+
+
+// The extractVisibleText method loads HTML into cheerio, removes non-visible elements, and extracts text from the <body> (or entire document if <body> is absent).
+// The cleanText method normalizes the text to make it suitable for analysis.
+// The extractSentences method splits text into sentences using punctuation ([.!?]+) and filters out very short fragments.
