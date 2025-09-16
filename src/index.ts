@@ -2,38 +2,30 @@ import { UrlDiscovery } from './url-discovery';
 import { PageAnalyzer } from './page-analyzer';
 import { ReportGenerator } from './report-generator';
 import { PageAnalysis } from './types';
-import { config } from './config'
-// Purpose: Orchestrates the entire crawling process.
-// Key Features:
+import { config } from './config';
 
-// Initializes UrlDiscovery, PageAnalyzer, and ReportGenerator.
-// Executes the three phases: URL discovery, page analysis, and report generation.
-// Tracks progress and logs timing information.
-
-
-// How It Works:
-
-// The run method:
-
-// Logs configuration details (start URL, max URLs, output file).
-// Phase 1: Calls UrlDiscovery.discoverUrls to get a list of URLs.
-// Phase 2: Iterates over URLs, calling PageAnalyzer.analyzePage for each, and collects results.
-// Logs progress every 10 pages.
-// Phase 3: Calls ReportGenerator.saveResults to save results and logSummary to print the summary.
-// Tracks and logs the total duration of the crawl.
-
-
-// Handles errors by logging them and exiting with a failure code.
-// Creates a WebsiteLanguageCrawler instance and runs it.
 class WebsiteLanguageCrawler {
   private urlDiscovery: UrlDiscovery;
   private pageAnalyzer: PageAnalyzer;
   private reportGenerator: ReportGenerator;
 
-  constructor() {
-    this.urlDiscovery = new UrlDiscovery();
-    this.pageAnalyzer = new PageAnalyzer();
-    this.reportGenerator = new ReportGenerator();
+  private constructor(urlDiscovery: UrlDiscovery, pageAnalyzer: PageAnalyzer, reportGenerator: ReportGenerator) {
+    this.urlDiscovery = urlDiscovery;
+    this.pageAnalyzer = pageAnalyzer;
+    this.reportGenerator = reportGenerator;
+  }
+
+  // Static async factory method to create an initialized instance
+  static async create(): Promise<WebsiteLanguageCrawler> {
+    const urlDiscovery = new UrlDiscovery();
+    const pageAnalyzer = new PageAnalyzer();
+    const reportGenerator = new ReportGenerator();
+    
+    // Ensure HttpClient instances are initialized
+    await (urlDiscovery as any).httpClient.initialized;
+    await (pageAnalyzer as any).httpClient.initialized;
+    
+    return new WebsiteLanguageCrawler(urlDiscovery, pageAnalyzer, reportGenerator);
   }
 
   async run(): Promise<void> {
@@ -41,12 +33,12 @@ class WebsiteLanguageCrawler {
     console.log(`📍 Target: ${config.startUrl}`);
     console.log(`🎯 Max URLs: ${config.maxUrls}`);
     console.log(`📁 Output: ${config.outputFile}`);
+    console.log(`📝 English Content Report: ${config.englishContentFile}`);
     console.log('-'.repeat(60));
 
     const startTime = Date.now();
 
     try {
-      // Phase 1: URL Discovery
       console.log('\n📡 Phase 1: URL Discovery');
       const urls = await this.urlDiscovery.discoverUrls();
       
@@ -55,7 +47,6 @@ class WebsiteLanguageCrawler {
         return;
       }
 
-      // Phase 2: Page Analysis
       console.log(`\n🔬 Phase 2: Analyzing ${urls.length} pages`);
       const results: PageAnalysis[] = [];
       let processed = 0;
@@ -69,14 +60,12 @@ class WebsiteLanguageCrawler {
           results.push(analysis);
         }
 
-        // Progress update
         if (processed % 10 === 0) {
           const percentage = Math.round((processed / urls.length) * 100);
           console.log(`\n📊 Progress: ${processed}/${urls.length} (${percentage}%)`);
         }
       }
 
-      // Phase 3: Generate Report
       console.log('\n📝 Phase 3: Generating Report');
       await this.reportGenerator.saveResults(results);
       
@@ -92,10 +81,14 @@ class WebsiteLanguageCrawler {
       console.error(`❌ Crawler failed: ${error.message}`);
       console.error(error.stack);
       process.exit(1);
+    } finally {
+      await (this.urlDiscovery as any).httpClient.close();
+      await (this.pageAnalyzer as any).httpClient.close();
     }
   }
 }
 
 // Run the crawler
-const crawler = new WebsiteLanguageCrawler();
-crawler.run().catch(console.error);
+WebsiteLanguageCrawler.create()
+  .then(crawler => crawler.run())
+  .catch(console.error);

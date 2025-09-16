@@ -1,8 +1,8 @@
 export interface PageAnalysis {
   url: string;
-  dominant_language: 'pl' | 'en' | 'mixed';
+  dominant_language: string; // Changed to string to support any language code
   percentages: {
-    polish: number;
+    primary: number; // Primary language (e.g., pl, it, fr)
     english: number;
     others: Array<{
       language: string;
@@ -38,15 +38,16 @@ export interface CrawlerConfig {
   outputFile: string;
   englishContentFile: string;
   userAgent: string;
+  primaryLanguage: string; // Added to specify the primary language
 }
 
 export interface CrawlSummary {
   totalPages: number;
-  averagePolishPercentage: number;
+  averagePrimaryPercentage: number; // Changed from averagePolishPercentage
   averageEnglishPercentage: number;
   pagesWithHighEnglishContent: Array<{
     url: string;
     englishPercentage: number;
   }>;
-  pagesWithoutPolish: string[];
+  pagesWithoutPrimary: string[]; // Changed from pagesWithoutPolish
 }

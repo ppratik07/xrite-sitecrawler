@@ -2,6 +2,7 @@ import { HttpClient } from './http-client';
 import { ContentExtractor } from './content-extractor';
 import { LanguageDetector } from './language-detector';
 import { PageAnalysis } from './types';
+import { config } from './config';
 
 export class PageAnalyzer {
   private httpClient: HttpClient;
@@ -13,24 +14,7 @@ export class PageAnalyzer {
     this.contentExtractor = new ContentExtractor();
     this.languageDetector = new LanguageDetector();
   }
-// The analyzePage method:
 
-// Fetches the page’s HTML.
-// Extracts visible text.
-// If text is too short, logs a warning and returns null.
-// Detects language stats and calculates percentages.
-// Determines the dominant language.
-// Compiles a PageAnalysis object with:
-
-// URL.
-// Dominant language (pl, en, or mixed).
-// Language percentages (Polish, English, others).
-// Total word count.
-// English content details (if any English words are detected).
-
-
-// Logs the analysis results (dominant language, percentages, total words).
-// Returns the PageAnalysis object or null on error.
   async analyzePage(url: string): Promise<PageAnalysis | null> {
     try {
       console.log(`🔍 Analyzing: ${url}`);
@@ -38,12 +22,14 @@ export class PageAnalyzer {
       const response = await this.httpClient.get(url);
       const visibleText = this.contentExtractor.extractVisibleText(response.data);
       
+      console.log(`📜 Extracted text (first 500 chars): ${visibleText.slice(0, 500)}`); // Debug text
       if (visibleText.length < 50) {
         console.log(`⚠️  Skipping ${url}: insufficient text content`);
         return null;
       }
 
       const languageStats = this.languageDetector.detectLanguageStats(visibleText);
+      console.log(`📊 Language stats: ${JSON.stringify(languageStats, null, 2)}`); // Debug stats
       const percentages = this.languageDetector.calculatePercentages(languageStats);
       const dominantLanguage = this.languageDetector.getDominantLanguage(percentages);
       const totalWords = Object.values(languageStats).reduce((sum, count) => sum + count, 0);
@@ -62,7 +48,7 @@ export class PageAnalyzer {
 
       console.log(`✅ Analysis complete for ${url}:`);
       console.log(`   - Dominant: ${dominantLanguage}`);
-      console.log(`   - Polish: ${percentages.polish}%, English: ${percentages.english}%`);
+      console.log(`   - ${config.primaryLanguage}: ${percentages.primary}%, English: ${percentages.english}%`);
       console.log(`   - Total words: ${totalWords}`);
 
       return analysis;
